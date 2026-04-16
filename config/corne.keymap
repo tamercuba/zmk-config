@@ -5,18 +5,22 @@
 / {
     macros {
         // Aceita 1 param dummy para satisfazer o hold-tap (#binding-cells deve somar 2)
+
         gui_layer4: gui_layer4 {
             compatible = "zmk,behavior-macro-one-param";
             #binding-cells = <1>;
             bindings =
-                <&macro_press &mo 4 &kp LGUI>,
+                <&macro_press>,
+                <&mo 4 &kp LGUI>,
                 <&macro_pause_for_release>,
-                <&macro_release &kp LGUI &mo 4>;
+                <&macro_release>,
+                <&kp LGUI &mo 4>;
         };
     };
 
     behaviors {
         // hold = &gui_layer4 (1 cell) + tap = &kp (1 cell) = #binding-cells <2> ✓
+
         ret_super: ret_super {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -30,6 +34,7 @@
         compatible = "zmk,combos";
 
         // J + K → TAB
+
         combo_tab {
             timeout-ms = <50>;
             key-positions = <19 20>;
@@ -41,6 +46,7 @@
         compatible = "zmk,conditional-layers";
 
         // mo1 + mo2 simultaneamente → camada 3 (adjust)
+
         adjust_layer {
             if-layers = <1 2>;
             then-layer = <3>;
@@ -51,85 +57,65 @@
         compatible = "zmk,keymap";
 
         // Camada 0 — Base (QWERTY)
+
         default_layer {
             bindings = <
-//╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
-   &kp ESC    &kp Q      &kp W      &kp E      &kp R      &kp T          &kp Y      &kp U      &kp I      &kp O      &kp P      &kp BSPC
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &kp LSHFT  &kp A      &kp S      &kp D      &kp F      &kp G          &kp H      &kp J      &kp K      &kp L      &kp SQT    &kp LSHFT
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &kp LALT   &kp Z      &kp X      &kp C      &kp V      &kp B          &kp N      &kp M      &kp COMMA  &kp DOT    &kp FSLH   &kp LCTRL
-//╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
-                                    &kp LCTRL  &mo 1      &kp SPACE      &ret_super 0 RET  &mo 2  &kp RALT
-//                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+&kp ESC    &kp Q  &kp W  &kp E      &kp R  &kp T        &kp Y             &kp U  &kp I      &kp O    &kp P     &kp BSPC
+&kp LSHFT  &kp A  &kp S  &kp D      &kp F  &kp G        &kp H             &kp J  &kp K      &kp L    &kp SQT   &kp LSHFT
+&kp LALT   &kp Z  &kp X  &kp C      &kp V  &kp B        &kp N             &kp M  &kp COMMA  &kp DOT  &kp LGUI  &kp LCTRL
+                         &kp LCTRL  &mo 1  &kp SPACE    &ret_super 0 RET  &mo 2  &kp RALT
             >;
         };
 
         // Camada 1 — Symbols
         // <>{}()[]-_|;"`:^~\  →  linha 0 e 1
         // BSPC vira DEL, resto trans
+
         symbols_layer {
             bindings = <
-//╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
-   &trans     &kp LS(COMMA) &kp LS(DOT) &kp LBRC &kp RBRC  &kp LBKT    &kp RBKT   &kp LPAR   &kp RPAR   &kp MINUS  &kp UNDER  &kp DEL
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &kp SEMI   &kp DQT    &kp GRAVE  &kp FSLH   &kp COLON      &kp CARET  &kp TILDE  &kp BSLH   &kp PIPE   &trans     &trans
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans     &trans     &trans     &trans
-//╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
-                                    &trans     &trans     &trans         &trans     &trans     &trans
-//                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+&trans  &none          &none   &kp PIPE   &kp SEMICOLON  &kp DOUBLE_QUOTES    &kp LESS_THAN     &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp MINUS       &none   &kp DEL
+&trans  &kp BACKSLASH  &none   &kp SLASH  &kp COLON      &kp SINGLE_QUOTE     &kp GREATER_THAN  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp UNDERSCORE  &trans  &trans
+&trans  &trans         &trans  &kp CARET  &kp TILDE      &trans               &kp QUESTION      &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans          &trans  &trans
+                               &trans     &trans         &trans               &trans            &mo 3                 &trans
             >;
         };
 
         // Camada 2 — Numbers
         // Linha 0: 1-0
         // ASDF → !@#$  |  CV → &*  |  HJKL → setas
+
         numbers_layer {
             bindings = <
-//╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
-   &trans     &kp N1     &kp N2     &kp N3     &kp N4     &kp N5         &kp N6     &kp N7     &kp N8     &kp N9     &kp N0     &kp DEL
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &kp EXCL   &kp AT     &kp HASH   &kp DLLR   &trans         &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &trans     &trans
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &trans     &trans     &kp AMPS   &kp ASTRK  &trans         &trans     &trans     &trans     &trans     &trans     &trans
-//╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
-                                    &trans     &trans     &trans         &trans     &trans     &trans
-//                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+&trans  &kp N1    &kp N2     &kp N3    &kp N4     &kp N5    &kp N6    &kp N7    &kp N8  &kp N9     &kp N0  &kp DEL
+&trans  &kp EXCL  &kp AT     &kp HASH  &kp DLLR   &trans    &kp LEFT  &kp DOWN  &kp UP  &kp RIGHT  &trans  &trans
+&trans  &kp PLUS  &kp EQUAL  &kp AMPS  &kp ASTRK  &trans    &trans    &trans    &trans  &trans     &trans  &trans
+                             &trans    &mo 3      &trans    &trans    &trans    &trans
             >;
         };
 
         // Camada 3 — Adjust (BT + F-keys)
         // Ativada automaticamente segurando mo1 + mo2
         // ESC → BT_CLR  |  ASD → BT_SEL 0..2  |  QWERTYUIOP → F1..F10  |  KL → F11 F12
+
         adjust_layer {
             bindings = <
-//╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
-   &bt BT_CLR &kp F1     &kp F2     &kp F3     &kp F4     &kp F5         &kp F6     &kp F7     &kp F8     &kp F9     &kp F10    &trans
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &trans &trans      &trans     &trans     &kp F11    &kp F12    &trans     &trans
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans     &trans     &trans     &trans
-//╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
-                                    &trans     &trans     &trans         &trans     &trans     &trans
-//                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+&bt BT_CLR  &kp F1        &kp F2        &kp F3        &kp F4  &kp F5    &kp F6  &kp F7  &kp F8   &kp F9   &kp F10  &trans
+&trans      &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &trans  &trans    &trans  &trans  &kp F11  &kp F12  &trans   &trans
+&trans      &trans        &trans        &trans        &trans  &trans    &trans  &trans  &trans   &trans   &trans   &trans
+                                        &trans        &trans  &trans    &trans  &trans  &trans
             >;
         };
 
         // Camada 4 — Super
         // Ativada pelo ret_super (hold) junto com LGUI segurado
         // QWERTYUIOP → 1234567890, resto trans
+
         super_layer {
             bindings = <
-//╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
-   &trans     &kp N1     &kp N2     &kp N3     &kp N4     &kp N5         &kp N6     &kp N7     &kp N8     &kp N9     &kp N0     &trans
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans     &trans     &trans     &trans
-//├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-   &trans     &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans     &trans     &trans     &trans
-//╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
-                                    &trans     &trans     &trans         &trans     &trans     &trans
-//                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+&trans  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5    &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
+                        &trans  &trans  &trans    &trans  &trans  &trans
             >;
         };
     };

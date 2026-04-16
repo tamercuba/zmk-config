@@ -11,3 +11,5 @@ cases/
 *.pdf
 *.3mf
 *.FCStd
+firmware/
+.claude/

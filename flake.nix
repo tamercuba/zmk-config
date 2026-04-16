@@ -11,7 +11,6 @@
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
           gh          # GitHub CLI (make download)
-          udisks2     # udisksctl (make flash)
         ];
       };
     };

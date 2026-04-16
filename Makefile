@@ -1,4 +1,4 @@
-SHELL    := /bin/bash
+SHELL    := /run/current-system/sw/bin/bash
 REPO     := tamercuba/zmk-config
 FIRMWARE := firmware
 MOUNT    := /mnt/nicenano
@@ -27,7 +27,19 @@ right:
 left:
 	$(call flash-side,ESQUERDO,corne_left-nice_nano_v2-zmk.uf2)
 
-# Aguarda novo device aparecer, verifica que é UF2, monta e flasha
+# Faz polling por qualquer block device com VID 239a + model nRF_UF2
+define find-nrf-device
+$$(while true; do \
+  found=$$(lsblk -rno NAME | grep -v '[0-9]$$' | while read dev; do \
+    vendor=$$(udevadm info /dev/$$dev 2>/dev/null | grep 'ID_USB_VENDOR_ID=' | cut -d= -f2); \
+    model=$$(udevadm info /dev/$$dev 2>/dev/null | grep 'ID_USB_MODEL=' | cut -d= -f2); \
+    if [[ "$$vendor" == "239a" && "$$model" == "nRF_UF2" ]]; then echo "$$dev"; break; fi; \
+  done); \
+  if [[ -n "$$found" ]]; then echo "$$found"; break; fi; \
+  printf "."; sleep 1; \
+done)
+endef
+
 define flash-side
 	@echo ""
 	@echo "══════════════════════════════════════"
@@ -35,20 +47,9 @@ define flash-side
 	@echo "  Conecte o teclado e dê dois cliques"
 	@echo "  rápidos no botão reset..."
 	@echo "══════════════════════════════════════"
-	@before=$$(lsblk -rno NAME | sort); \
-	 printf "Aguardando dispositivo"; \
-	 while [[ "$$(lsblk -rno NAME | sort)" == "$$before" ]]; do printf "."; sleep 1; done; echo; \
-	 device=$$(comm -13 <(echo "$$before") <(lsblk -rno NAME | sort) | grep -v '[0-9]$$' | head -1); \
-	 if [[ -z "$$device" ]]; then echo "ERRO: nenhum dispositivo detectado."; exit 1; fi; \
-	 echo "→ Dispositivo detectado: /dev/$$device"; \
-	 vendor=$$(udevadm info /dev/$$device | grep 'ID_USB_VENDOR_ID' | cut -d= -f2); \
-	 model=$$(udevadm info /dev/$$device | grep 'ID_USB_MODEL=' | cut -d= -f2); \
-	 echo "→ USB: vendor=$$vendor model=$$model"; \
-	 if [[ "$$vendor" != "239a" || "$$model" != "nRF_UF2" ]]; then \
-	   echo "ERRO: dispositivo não é o bootloader Adafruit nRF UF2 (vendor=$$vendor model=$$model)."; \
-	   exit 1; \
-	 fi; \
-	 echo "→ Bootloader Adafruit nRF UF2 confirmado."; \
+	@printf "Aguardando bootloader Adafruit nRF UF2"; \
+	 device=$(find-nrf-device); echo; \
+	 echo "→ Dispositivo encontrado: /dev/$$device"; \
 	 echo "→ Montando em $(MOUNT)..."; \
 	 sudo mount /dev/$$device $(MOUNT); \
 	 echo "→ Copiando $(2)..."; \

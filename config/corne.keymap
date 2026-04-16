@@ -33,12 +33,18 @@
     combos {
         compatible = "zmk,combos";
 
-        // J + K → TAB
-
-        combo_tab {
+        // J + K → Enter
+        combo_jk_enter {
             timeout-ms = <50>;
             key-positions = <19 20>;
-            bindings = <&kp TAB>;
+            bindings = <&kp RET>;
+        };
+
+        // D + F → Enter
+        combo_df_enter {
+            timeout-ms = <50>;
+            key-positions = <14 15>;
+            bindings = <&kp RET>;
         };
     };
 
@@ -63,7 +69,7 @@
 &kp ESC    &kp Q  &kp W  &kp E      &kp R  &kp T        &kp Y             &kp U  &kp I      &kp O    &kp P     &kp BSPC
 &kp LSHFT  &kp A  &kp S  &kp D      &kp F  &kp G        &kp H             &kp J  &kp K      &kp L    &kp SQT   &kp LSHFT
 &kp LALT   &kp Z  &kp X  &kp C      &kp V  &kp B        &kp N             &kp M  &kp COMMA  &kp DOT  &kp LGUI  &kp LCTRL
-                         &kp LCTRL  &mo 1  &kp SPACE    &ret_super 0 RET  &mo 2  &kp RALT
+                         &kp LCTRL  &mo 1  &kp SPACE    &gui_layer4 0  &mo 2  &kp RALT
             >;
         };
 

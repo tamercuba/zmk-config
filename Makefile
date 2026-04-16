@@ -51,9 +51,11 @@ define flash-side
 	@printf "Aguardando bootloader Adafruit nRF UF2"; \
 	 device=$(find-nrf-device); echo; \
 	 echo "→ Dispositivo encontrado: /dev/$$device"; \
-	 echo "→ Montando em $(MOUNT)..."; \
-	 sudo mount /dev/$$device $(MOUNT) || { echo "ERRO: mount falhou."; exit 1; }; \
+	 echo "→ Montando..."; \
+	 mount_point=$$(udisksctl mount -b /dev/$$device | grep -oP '(?<=at ).*'); \
+	 [[ -n "$$mount_point" ]] || { echo "ERRO: mount falhou."; exit 1; }; \
+	 echo "→ Montado em $$mount_point"; \
 	 echo "→ Copiando $(2)..."; \
-	 sudo cp $(FIRMWARE)/$(2) $(MOUNT)/ && sync || { sudo umount $(MOUNT); exit 1; }; \
+	 cp $(FIRMWARE)/$(2) $$mount_point/ && sync || { udisksctl unmount -b /dev/$$device; exit 1; }; \
 	 echo "✓ Lado $(1) flashado!"
 endef

@@ -36,7 +36,7 @@ $$(while true; do \
     if [[ "$$vendor" == "239a" && "$$model" == "nRF_UF2" ]]; then echo "$$dev"; break; fi; \
   done); \
   if [[ -n "$$found" ]]; then echo "$$found"; break; fi; \
-  printf "."; sleep 1; \
+  printf "." >&2; sleep 1; \
 done)
 endef
 
@@ -44,15 +44,16 @@ define flash-side
 	@echo ""
 	@echo "══════════════════════════════════════"
 	@echo "  LADO $(1)"
-	@echo "  Conecte o teclado e dê dois cliques"
+	@echo "  Troque o cabo e dê dois cliques"
 	@echo "  rápidos no botão reset..."
 	@echo "══════════════════════════════════════"
+	@for i in 5 4 3 2 1; do printf "  Iniciando em $$i...\r"; sleep 1; done; echo
 	@printf "Aguardando bootloader Adafruit nRF UF2"; \
 	 device=$(find-nrf-device); echo; \
 	 echo "→ Dispositivo encontrado: /dev/$$device"; \
 	 echo "→ Montando em $(MOUNT)..."; \
-	 sudo mount /dev/$$device $(MOUNT); \
+	 sudo mount /dev/$$device $(MOUNT) || { echo "ERRO: mount falhou."; exit 1; }; \
 	 echo "→ Copiando $(2)..."; \
-	 sudo cp $(FIRMWARE)/$(2) $(MOUNT)/ && sync; \
+	 sudo cp $(FIRMWARE)/$(2) $(MOUNT)/ && sync || { sudo umount $(MOUNT); exit 1; }; \
 	 echo "✓ Lado $(1) flashado!"
 endef

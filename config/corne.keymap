@@ -46,7 +46,7 @@
         combo_df_enter {
             timeout-ms = <50>;
             key-positions = <15 16>;
-            bindings = <&kp RET>;
+            bindings = <&kp TAB>;
         };
     };
 

@@ -4,9 +4,10 @@
 
 / {
     macros {
+        // Aceita 1 param dummy para satisfazer o hold-tap (#binding-cells deve somar 2)
         gui_layer4: gui_layer4 {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
+            compatible = "zmk,behavior-macro-one-param";
+            #binding-cells = <1>;
             bindings =
                 <&macro_press &mo 4 &kp LGUI>,
                 <&macro_pause_for_release>,
@@ -15,9 +16,10 @@
     };
 
     behaviors {
+        // hold = &gui_layer4 (1 cell) + tap = &kp (1 cell) = #binding-cells <2> ✓
         ret_super: ret_super {
             compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <1>;
+            #binding-cells = <2>;
             tapping-term-ms = <200>;
             flavor = "balanced";
             bindings = <&gui_layer4>, <&kp>;
@@ -58,7 +60,7 @@
 //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
    &kp LALT   &kp Z      &kp X      &kp C      &kp V      &kp B          &kp N      &kp M      &kp COMMA  &kp DOT    &kp FSLH   &kp LCTRL
 //╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
-                                    &kp LCTRL  &mo 1      &kp SPACE      &ret_super RET  &mo 2  &kp RALT
+                                    &kp LCTRL  &mo 1      &kp SPACE      &ret_super 0 RET  &mo 2  &kp RALT
 //                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
             >;
         };

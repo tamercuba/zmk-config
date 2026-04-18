@@ -4,8 +4,6 @@
 
 / {
     macros {
-        // Aceita 1 param dummy para satisfazer o hold-tap (#binding-cells deve somar 2)
-
         gui_layer4: gui_layer4 {
             compatible = "zmk,behavior-macro-one-param";
             #binding-cells = <1>;
@@ -19,8 +17,6 @@
     };
 
     behaviors {
-        // hold = &gui_layer4 (1 cell) + tap = &kp (1 cell) = #binding-cells <2> ✓
-
         ret_super: ret_super {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -32,17 +28,11 @@
 
     combos {
         compatible = "zmk,combos";
-
-        // J + K → Enter
-
         combo_jk_enter {
             timeout-ms = <50>;
             key-positions = <19 20>;
             bindings = <&kp RET>;
         };
-
-        // D + F → Enter
-
         combo_df_enter {
             timeout-ms = <50>;
             key-positions = <15 16>;
@@ -52,9 +42,6 @@
 
     conditional_layers {
         compatible = "zmk,conditional-layers";
-
-        // mo1 + mo2 simultaneamente → camada 3 (adjust)
-
         adjust_layer {
             if-layers = <1 2>;
             then-layer = <3>;
@@ -63,9 +50,6 @@
 
     keymap {
         compatible = "zmk,keymap";
-
-        // Camada 0 — Base (QWERTY)
-
         default_layer {
             bindings = <
 &kp ESC    &kp Q  &kp W  &kp E      &kp R  &kp T        &kp Y          &kp U  &kp I      &kp O    &kp P     &kp BSPC
@@ -74,11 +58,6 @@
                          &kp LCTRL  &mo 1  &kp SPACE    &gui_layer4 0  &mo 2  &kp RALT
             >;
         };
-
-        // Camada 1 — Symbols
-        // <>{}()[]-_|;"`:^~\  →  linha 0 e 1
-        // BSPC vira DEL, resto trans
-
         symbols_layer {
             bindings = <
 &trans  &none          &none   &kp PIPE   &kp SEMICOLON  &kp DOUBLE_QUOTES    &kp LESS_THAN     &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp MINUS       &none   &kp DEL
@@ -87,11 +66,6 @@
                                &trans     &trans         &trans               &trans            &trans                &trans
             >;
         };
-
-        // Camada 2 — Numbers
-        // Linha 0: 1-0
-        // ASDF → !@#$  |  CV → &*  |  HJKL → setas
-
         numbers_layer {
             bindings = <
 &trans  &kp N1    &kp N2     &kp N3    &kp N4     &kp N5    &kp N6    &kp N7    &kp N8  &kp N9     &kp N0  &kp DEL
@@ -100,11 +74,6 @@
                              &trans    &trans     &trans    &trans    &trans    &trans
             >;
         };
-
-        // Camada 3 — Adjust (BT + F-keys)
-        // Ativada automaticamente segurando mo1 + mo2
-        // ESC → BT_CLR  |  ASD → BT_SEL 0..2  |  QWERTYUIOP → F1..F10  |  KL → F11 F12
-
         adjust_layer {
             bindings = <
 &bt BT_CLR  &kp F1        &kp F2        &kp F3        &kp F4  &kp F5    &kp F6      &kp F7             &kp F8           &kp F9   &kp F10  &trans
@@ -113,11 +82,6 @@
                                         &trans        &trans  &trans    &trans      &trans             &trans
             >;
         };
-
-        // Camada 4 — Super
-        // Ativada pelo ret_super (hold) junto com LGUI segurado
-        // QWERTYUIOP → 1234567890, resto trans
-
         super_layer {
             bindings = <
 &trans  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5    &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &trans

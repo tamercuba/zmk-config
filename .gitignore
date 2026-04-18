@@ -1,15 +1,4 @@
-
 .zmk/
-
-# Cases e arquivos de design
-cases/
-*.stl
-*.dxf
-*.svg
-*.avif
-*.png
-*.pdf
-*.3mf
-*.FCStd
 firmware/
+resources/
 .claude/

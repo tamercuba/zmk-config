@@ -133,6 +133,7 @@
           git
           wget
           file
+          usbutils
 
           # ZMK commands
           zmk-build-left

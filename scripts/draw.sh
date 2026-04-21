@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generates SVG keymap diagram for the Corne and updates README.md.
+# Generates SVG keymap diagrams for all keyboards and updates README.md.
 
 set -euo pipefail
 
@@ -8,24 +8,40 @@ RESET='\033[0m'
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOCS_DIR="$REPO_ROOT/docs"
-CONFIG="$REPO_ROOT/scripts/keymap-drawer.yaml"
 
 mkdir -p "$DOCS_DIR"
 
-echo -e "${BOLD_GREEN}Drawing corne...${RESET}"
-keymap -c "$CONFIG" parse -z "$REPO_ROOT/config/corne.keymap" \
-    | keymap -c "$CONFIG" draw - \
-    > "$DOCS_DIR/corne.svg"
-echo "  → docs/corne.svg"
+for keymap_file in "$REPO_ROOT"/config/*.keymap; do
+    keyboard="$(basename "$keymap_file" .keymap)"
+    config="$REPO_ROOT/scripts/${keyboard}.yaml"
+    svg="$DOCS_DIR/${keyboard}.svg"
+
+    echo -e "${BOLD_GREEN}Drawing ${keyboard}...${RESET}"
+
+    if [[ -f "$config" ]]; then
+        keymap -c "$config" parse -z "$keymap_file" \
+            | keymap -c "$config" draw - \
+            > "$svg"
+    else
+        keymap parse -z "$keymap_file" \
+            | keymap draw - \
+            > "$svg"
+    fi
+
+    echo "  → docs/${keyboard}.svg"
+done
 
 python3 - "$REPO_ROOT" <<'EOF'
-import re, sys, os
+import re, sys, os, glob
 
 repo_root = sys.argv[1]
 readme_path = os.path.join(repo_root, 'README.md')
 
+svgs = sorted(glob.glob(os.path.join(repo_root, 'docs', '*.svg')))
 section = '<!-- KEYMAP-DRAWER:START -->\n'
-section += '<details>\n<summary><b>corne</b></summary>\n\n![corne keymap](docs/corne.svg)\n\n</details>\n\n'
+for svg in svgs:
+    name = os.path.splitext(os.path.basename(svg))[0]
+    section += f'<details>\n<summary><b>{name}</b></summary>\n\n![{name} keymap](docs/{name}.svg)\n\n</details>\n\n'
 section += '<!-- KEYMAP-DRAWER:END -->'
 
 with open(readme_path, 'r') as f:

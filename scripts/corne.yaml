@@ -1,0 +1,3 @@
+parse_config:
+  raw_binding_map:
+    "&gui_layer4": {t: "GUI", h: "super"}

@@ -13,7 +13,7 @@ CONFIG="$REPO_ROOT/scripts/keymap-drawer.yaml"
 mkdir -p "$DOCS_DIR"
 
 echo -e "${BOLD_GREEN}Drawing corne...${RESET}"
-keymap parse -z "$REPO_ROOT/config/corne.keymap" \
+keymap -c "$CONFIG" parse -z "$REPO_ROOT/config/corne.keymap" \
     | keymap -c "$CONFIG" draw - \
     > "$DOCS_DIR/corne.svg"
 echo "  → docs/corne.svg"

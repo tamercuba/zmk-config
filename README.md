@@ -18,4 +18,17 @@ nix develop      # only if direnv isnt working
 
 zmk-build        # compile all targets → firmware/
 zmk-flash        # flash to keyboard
+draw             # generate SVG diagrams and update README
 ```
+
+## Keymap Diagrams
+
+<!-- KEYMAP-DRAWER:START -->
+<details>
+<summary><b>corne</b></summary>
+
+![corne keymap](docs/corne.svg)
+
+</details>
+
+<!-- KEYMAP-DRAWER:END -->

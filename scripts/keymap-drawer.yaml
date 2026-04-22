@@ -1,0 +1,12 @@
+parse_config:
+  zmk_keycode_map:
+    LSHFT: SHIFT
+    RSHFT: SHIFT
+    LALT: ALT
+    RALT: ALT
+    LCTRL: CTRL
+    RCTRL: CTRL
+    LGUI: META
+    RGUI: META
+    BSPC: BCKSPACE
+    RET: ENTER

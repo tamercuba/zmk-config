@@ -8,25 +8,46 @@ RESET='\033[0m'
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOCS_DIR="$REPO_ROOT/docs"
+GLOBAL_CONFIG="$REPO_ROOT/scripts/keymap-drawer.yaml"
 
 mkdir -p "$DOCS_DIR"
 
 for keymap_file in "$REPO_ROOT"/config/*.keymap; do
     keyboard="$(basename "$keymap_file" .keymap)"
-    config="$REPO_ROOT/scripts/${keyboard}.yaml"
+    kb_config="$REPO_ROOT/scripts/${keyboard}.yaml"
     svg="$DOCS_DIR/${keyboard}.svg"
 
     echo -e "${BOLD_GREEN}Drawing ${keyboard}...${RESET}"
 
-    if [[ -f "$config" ]]; then
-        keymap -c "$config" parse -z "$keymap_file" \
-            | keymap -c "$config" draw - \
-            > "$svg"
-    else
-        keymap parse -z "$keymap_file" \
-            | keymap draw - \
-            > "$svg"
-    fi
+    # Merge global + per-keyboard configs into a temp file (keymap only accepts one -c)
+    merged_config="$(mktemp /tmp/keymap-drawer-XXXXXX.yaml)"
+    trap "rm -f '$merged_config'" EXIT
+    python3 - "$GLOBAL_CONFIG" "$kb_config" > "$merged_config" <<'PYEOF'
+import sys, yaml
+
+def deep_merge(base, new):
+    result = dict(base)
+    for k, v in new.items():
+        if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+            result[k] = deep_merge(result[k], v)
+        else:
+            result[k] = v
+    return result
+
+merged = {}
+for path in sys.argv[1:]:
+    try:
+        with open(path) as f:
+            merged = deep_merge(merged, yaml.safe_load(f) or {})
+    except FileNotFoundError:
+        pass
+
+print(yaml.dump(merged, default_flow_style=False))
+PYEOF
+
+    keymap -c "$merged_config" parse -z "$keymap_file" \
+        | keymap -c "$merged_config" draw - \
+        > "$svg"
 
     echo "  → docs/${keyboard}.svg"
 done
